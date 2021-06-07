@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    </head>
+
+    <style>
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul, li {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+        .listA li {
+            height: 140px;
+        }
+
+
+        .listA li div {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #rankcls{
+            width:10%;
+            display:inline-block;
+        }
+
+        #titlecls{
+            text-align: left;
+            width:70%;
+            text-overflow:ellipsis;
+            overflow: hidden;
+            white-space:nowrap;
+            display:inline-block;
+
+        }
+        #singercls{
+            text-align: right;
+             width:5%; 
+            /* width:90px; */
+            text-overflow:ellipsis;
+            overflow: hidden;
+            white-space:nowrap;
+            right:0%;
+            display:inline-block;
+
+        }
+
+        .backimgcls{
+            /* width : 90px;
+            height : 90px; */
+            display:block"
+        }
+       
+
+      </style>
+
+    <script>
+        var isDomestic = true;
+
+        function getCurrentDate() {
+            let date = new Date()
+            let year = date.getFullYear()
+            let month = date.getMonth() + 1
+            month = month >= 10
+                ? month
+                : '0' + month
+            let day = date.getDate()
+            day = day >= 10
+                ? day
+                : '0' + day
+            let hour = date.getHours()
+            hour = hour >= 10
+                ? hour
+                : '0' + hour
+            let min = date.getMinutes()
+            let sec = date.getSeconds()
+            sec = sec >= 10
+                ? sec
+                : '0' + sec
+
+            let purchaseDay = year + '-' + month + '-' + day + ' ' + hour + ':' + min;
+            return purchaseDay;
+        };
+
+        function changeChart(event){
+            var eventTarget = event;
+            if(eventTarget.id == 'domestic'){
+                isDomestic = true;
+                $(eventTarget).css('font-weight','bold');
+                $(eventTarget).css('color','red');
+                $("#overseas").css('font-weight', 'normal');
+                $("#overseas").css('color','black');
+
+            }else{
+                isDomestic = false;
+                $(eventTarget).css('font-weight','bold');
+                $(eventTarget).css('color','red');
+                $("#domestic").css('font-weight', 'normal');
+                $("#domestic").css('color','black');
+            };
+            callChart();
+
+        };
+
+
+        $('#chartName').change(function(){  
+            alert('dong');
+            $(this).val();
+            $(this).children('option:selected"').text();
+        });
+
+        function makeData(arr){
+            var htmlText = $(".listA").empty();
+            $.each(arr, function (index, item) {
+                htmlText.append("<li><div id='rankcls'>" + item.rank + "</div><div class='backimgcls'><img src='images/" + item.imageUrl + "'/></div><div id='titlecls'>"+ item.title + "</div><div id='singercls'> " + item.singer +"</sapn></li>");
+            });
+            //alert(item.rank + " " + item.title + " " + item.singer + " " + item.imageUrl);
+        };
+
+        function callChart(){
+            if(isDomestic){
+                    $.ajax({
+                        url:'http://localhost:3300/v1/chart/domestic',
+                            success:function(data){
+                                alert(data);
+                                makeData(data.chartList);
+                            },
+                            fail:function(error){
+                                alert(error);
+                            }
+                    });         
+                  }else{
+                    $.ajax({
+                        url:'http://localhost:3300/v1/chart/overseas',
+                            success:function(data){
+                                alert(data);
+                                makeData(data.chartList);
+                            },
+                            fail:function(error){
+                                alert(error);
+                            }
+                    }); 
+                  }
+        }
+
+        $(document).ready(() =>{
+                  $("#today").text(getCurrentDate()); 
+                  callChart();
+                  
+        });
+    </script>
+    <body>
+            <!-- <script type="text/javascript">
+                $(document).ready(() =>{
+                    $("body").append("<h1>The Message form Jquery</h1> ")
+                });
+            </script> -->
+            <div>
+                <div style="text-align: center;"> 음악차트</div>
+                <div id="today" style="text-align: center;"> 11111</div>
+            </div>
+            <div>
+               <span id='domestic' style = 'color:red; font-weight:bold' onclick="changeChart(this)">국내</span>
+               <span id='overseas'onclick="changeChart(this)">해외</span>               
+
+            </div>
+            <div class="listA">               
+            </div>
+    </body>
+</html>
